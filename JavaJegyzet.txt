@@ -1,0 +1,427 @@
+Egy alap modell:
+
+package modell;
+ // A játékos adatait (név és pontszám) tároló és kezelõ modell osztály.
+public class Modell {
+    private String jatekos;
+    private int pontszam;
+    // Egy vesszõvel elválasztott szöveges sorból (pl. "Név,Pont") objektumot példányosít.
+     
+    public Modell(String sor) {
+        String adatok[] = sor.split(",");
+        this.jatekos = adatok[0].trim();
+        this.pontszam = Integer.parseInt(adatok[1]);
+    }
+     //Név és pontszám alapján hoz létre új példányt, a szöveges konstruktor logikáját felhasználva.
+    public Modell(String jatekos, int pontszam) {
+        this(jatekos + "," + pontszam);
+    }
+    // Visszaadja az eltárolt játékos nevét.
+    public String getJatekos() {
+        return jatekos;
+    }
+    //Visszaadja a játékos által elért pontszámot.
+    public int getPontszam() {
+        return pontszam;
+    }
+//Szöveges formában összefoglalja az objektum mezõinek aktuális értékeit.
+    @Override
+    public String toString() {
+        return "Modell{" +
+                "jatekos='" + jatekos + '\'' +
+                ", pontszam=" + pontszam +
+                '}';
+    }
+}
+
+Egy alap controller:
+package controller;
+
+import modell.Modell;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+
+//A játékosadatok feldolgozásáért és a statisztikák számításáért felelõs vezérlõ osztály.
+public class Controller {
+
+    // Beolvassa a megadott fájl sorait, és Modell objektumok listájává alakítja õket.
+//A verzió:
+    public List<Modell> beolvas(String fajlnev) {
+        List<Modell> lista = new ArrayList<>();
+        try  {
+            List<String> sorok = Files.readAllLines(Path.of(fajlnev));
+            for (int i = 0; i < sorok.size(); i++) {
+                lista.add(new Modell(sorok.get(i)));
+            }
+        } catch (IOException e) {
+            System.err.println("HIBA: A fájl nem található! (" + fajlnev + ")");
+        }
+        return lista;
+    }
+
+//B verzió:
+    public List<Modell> beolvas(String fajlnev){
+        List<Modell> lista = new ArrayList<>();
+        try(Scanner sc = new Scanner(new File(fajlnev))){
+            while(sc.hasNext()){
+                String szo = sc.next();
+                lista.add(new Modell(szo));
+            }
+
+        }catch (FileNotFoundException e){
+            System.err.println("Hiba történt: ("+fajlnev+")");
+        }
+        return lista;
+    }}
+
+    //Kigyûjti és egy külön listába válogatja a kapott modellekben tárolt pontszámokat.
+     
+    private List<Integer> kinyer(List<Modell> lista){
+        List<Integer> pontok = new ArrayList<>();
+        for(Modell m : lista){
+            pontok.add(m.getPontszam());
+        }
+        return pontok;
+    }
+
+//Megkeresi és visszaadja a listában szereplõ játékosok közül a legmagasabb elért pontszámot.
+    public int legnagyobbPontszam(List<Modell> lista){
+        if (lista.isEmpty()){
+            return 0;
+        }
+        List<Integer> pontok = kinyer(lista);
+        return Collections.max(pontok);
+    }
+
+//Kiszámítja a listában szereplõ összes játékos pontszámának számtani középértékét.
+    public double atlagPontszam(List<Modell> lista){
+        if (lista.isEmpty()){
+            return 0;
+        }
+        int osszeg = 0;
+        for (Modell m : lista){
+            osszeg += m.getPontszam();
+        }
+
+        return (double) osszeg/ lista.size();
+    }
+
+/Létrehoz egy új listát, amelyben minden játékos pontszámát megnöveli a megadott értékkel.
+    public List<Integer> pontotAd(List<Modell> lista, int pontszam){
+        List<Integer> eredmeny = new ArrayList<>();
+        for (Modell m : lista){
+            eredmeny.add(m.getPontszam()+pontszam);
+        }
+        return eredmeny;
+    }
+     * Alapértelmezés szerint pontosan 1 egységgel növeli meg minden játékos pontszámát egy új listában.
+    public List<Integer> pontotAd(List<Modell> lista){
+        return pontotAd(lista, 1);
+    }
+     * Csoportosítja a játékosokat pontszám alapján (Profi/Amatõr), és összeszámolja a kategóriák létszámát.
+    public Map<String, Integer> statisztika(List<Modell> lista){
+        Map<String, Integer> map = new HashMap<>();
+
+        for (Modell m : lista) {
+            // Meghatározunk egy kategóriát (pl. "Pro" ha > 80, "Amatõr" egyébként)
+            String kategoria = (m.getPontszam() >= 80) ? "Profi" : "Amatõr";
+
+            // Itt használjuk a te logikádat: ha már benne van, növeljük, ha nincs, 1-rõl indul
+            map.put(kategoria, map.getOrDefault(kategoria, 0) + 1);
+        }
+        return map;
+    }
+}
+public static String kulonbozoKarakterek(List<Modell> modellLista) {
+        if (modellLista == null || modellLista.isEmpty()) {
+            return "";
+        }
+
+        Set<Character> egyediKarakterek = new LinkedHashSet<>();
+
+        // Végigmegyünk a listában lévõ összes modellen
+        for (Modell modell : modellLista) {
+            // Ha a modell vagy a benne lévõ szöveg null, átugorjuk a hibák elkerülésére
+            if (modell == null || modell.getSzoveg() == null) {
+                continue;
+            }
+            
+            // A modell szövegének karaktereit hozzáadjuk a halmazhoz
+            for (char c : modell.getSzoveg().toCharArray()) {
+                egyediKarakterek.add(c);
+            }
+        }
+
+        // String felépítése
+        StringBuilder sb = new StringBuilder();
+        for (char c : egyediKarakterek) {
+            sb.append(c);
+        }
+
+        return sb.toString();
+    }
+
+    // 7. Karakterstatisztika a Modell listából
+    public static Map<Character, Integer> karakterStatisztika(List<Modell> modellLista) {
+        Map<Character, Integer> statisztika = new LinkedHashMap<>();
+        
+        if (modellLista == null || modellLista.isEmpty()) {
+            return statisztika;
+        }
+
+        // Végigmegyünk a listában lévõ összes modellen
+        for (Modell modell : modellLista) {
+            if (modell == null || modell.getSzoveg() == null) {
+                continue;
+            }
+
+            // Feldolgozzuk az aktuális modell szövegét
+            for (char c : modell.getSzoveg().toCharArray()) {
+                statisztika.put(c, statisztika.getOrDefault(c, 0) + 1);
+            }
+        }
+
+        return statisztika;
+    }
+Konzolos view:
+package view;
+
+import controller.Controller;
+import modell.Modell;
+import java.util.List;
+import java.util.Map;
+* A felhasználói felület megjelenítéséért és az adatok prezentálásáért felelõs osztály.
+public class View {
+    private Controller ctrl;
+    private String fajlnev;
+
+     * Beállítja a megjelenítéshez szükséges vezérlõt és a feldolgozandó fájl elérési útját.
+    public View(Controller ctrl, String fajlnev) {
+        this.ctrl = ctrl;
+        this.fajlnev = fajlnev;
+    }
+
+     * Vezérli a teljes folyamatot: beolvastatja az adatokat, majd kilistázza a játékosokat és a statisztikákat.
+    public void megjelenit() {
+        System.out.println("--- Játékos Statisztika Rendszer (View osztályból) ---");
+
+        List<Modell> jatekosok = ctrl.beolvas(fajlnev);
+
+        if (jatekosok.isEmpty()) {
+            System.out.println("Nincs megjeleníthetõ adat.");
+            return;
+        }
+
+        // Adatok listázása
+        for (Modell m : jatekosok) {
+            System.out.println(m); // A Modell toString() metódusát használja
+        }
+
+        // Statisztikák
+        double atlag = ctrl.atlagPontszam(jatekosok);
+        int max = ctrl.legnagyobbPontszam(jatekosok);
+
+        System.out.println("\nÖsszegzés:");
+        System.out.printf("- Átlag: %.2f pont\n", atlag);
+        System.out.println("- Legjobb eredmény: " + max + " pont");
+
+        // Statisztika Map megjelenítése
+        Map<String, Integer> stat = ctrl.statisztika(jatekosok);
+        System.out.println("\nEloszlás:");
+        stat.forEach((kategoria, szam) -> System.out.println(kategoria + ": " + szam + " fõ"));
+    }
+}
+
+Indító file:
+
+package main;
+
+import controller.Controller;
+import view.View;
+
+public class Main {
+    public static void main(String[] args) {
+        // 1. Létrehozzuk a logikát (Controller)
+        Controller controller = new Controller();
+
+        // 2. Létrehozzuk a nézetet, és átadjuk neki a kontrollert + a fájlt
+        View view = new View(controller, "src/gaming.txt");
+
+        // 3. Elindítjuk a megjelenítést
+        view.megjelenit();
+    }
+}
+
+package nezet;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class Komponensek extends JFrame {
+
+    private JButton btnFelvesz, btnMozgat;
+    private JTextField txtSzoveg;
+    private JComboBox<String> cmbElemek;
+    private JList<String> lstElemek;
+    private DefaultListModel<String> dlm;
+
+    // Beállítja az ablak alapértékeit, felépíti a felületet és hozzárendeli az eseménykezelõket.
+    public Komponensek()  {
+        setTitle("Komponensek");
+        setSize(400,240);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        
+        // Komponensek példányosítása
+        ini();
+        
+        // Felsõ panel összeállítása (szövegmezõ és gomb)
+        JPanel pnlFent = new JPanel(new FlowLayout());
+        pnlFent.add(new JLabel("új elem: "));
+        pnlFent.add(txtSzoveg);
+        pnlFent.add(btnFelvesz);
+        add(pnlFent, BorderLayout.NORTH);
+
+        // Bal oldali rész összeállítása (legördülõ lista)
+        JPanel pnlBal = new JPanel(new FlowLayout());
+        pnlBal.add(cmbElemek);
+        cmbElemek.setSelectedIndex(-1);
+        add(pnlBal, BorderLayout.WEST);
+        add(btnMozgat, BorderLayout.EAST);
+
+        // Középsõ rész (görgethetõ lista)
+        add(new JScrollPane(lstElemek), BorderLayout.CENTER);
+
+        // Kattintási események bekötése
+        btnFelvesz.addActionListener( e -> onFelvesz());
+        btnMozgat.addActionListener( e -> onMozgat());
+    }
+
+    // Létrehozza a vizuális komponenseket és inicializálja a lista adatszerkezetét.
+    private void ini() {
+        btnFelvesz = new JButton("Felvesz");
+        btnMozgat = new JButton("Mozgat");
+        txtSzoveg = new JTextField(15);
+        cmbElemek = new JComboBox<>(new String[]{"elem 1", "elem 2", "elem 3"});
+
+        dlm = new DefaultListModel<>();
+        lstElemek = new JList<>(dlm);
+    }
+
+    // A szövegmezõbe írt adatot beleteszi a legördülõ menübe, ha az nem üres.
+    private void onFelvesz() {
+        String s = txtSzoveg.getText();
+        if(!s.isEmpty()){
+            cmbElemek.addItem(s);
+            txtSzoveg.setText("");
+        }else{
+            JOptionPane.showMessageDialog(this, "üres a szövegmezõ!");
+        }
+    }
+
+    // Áthelyezi a kiválasztott elemet a legördülõ menübõl a lenti listába.
+    private void onMozgat() {
+        String s = (String)cmbElemek.getSelectedItem();
+        if(cmbElemek.getSelectedIndex() > -1){
+            dlm.addElement(s);
+            cmbElemek.removeItem(s);
+        }else{
+            JOptionPane.showMessageDialog(this, "nincs kiválasztva elem!");
+        }
+    }
+}
+
+
+package nezet;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+public class Esemenyek extends JFrame {
+
+    private JLabel lbl;
+    private JTextField txt;
+    private JButton btn;
+
+    // Meghívja az ablak alapbeállításait és a vizuális elemeket létrehozó metódusokat.
+    public Esemenyek() {
+        formBeallitasok();
+        komponensekBeallitasa();
+    }
+
+    // Beállítja az ablak méretét, címét, elrendezését és az egyedi kilépési folyamatot.
+    private void formBeallitasok() {
+        setTitle("események");
+        setSize(400,240);
+
+        //kilépés X-re:
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                kilepes();
+            }
+        });
+
+        setLocationRelativeTo(null);
+
+        // több komponenshez, de amúgy is legyen:
+        //setLayout(new FlowLayout()); //egymás mellé
+        setLayout(new GridLayout(1,0,5,5)); //rácsra 1 sorba
+        setLayout(new GridLayout(0,1,5,5)); //rácsra 1 oszlopba
+    }
+
+    // Létrehozza a feliratot, a szövegmezõt és a gombot, majd beregisztrálja a kattintás eseményt.
+    private void komponensekBeallitasa() {
+        lbl = new JLabel("írj ide valamit: ");
+        add(lbl);
+
+        txt = new JTextField(15);
+        add(txt);
+
+        btn = new JButton("klikk");
+        add(btn);
+        btn.addActionListener(e -> onKlikk());
+    }
+
+    // Egy felugró ablakban megjeleníti a felhasználó által a szövegmezõbe beírt szöveget.
+    private void onKlikk() {
+        String s = txt.getText();
+        JOptionPane.showMessageDialog(this, "beírt szöveg: " + s);
+    }
+
+    // Megerõsítést kér a felhasználótól a program bezárása elõtt, és igen válasz esetén kilép.
+    private void kilepes() {
+        String m = "Biztos kilépsz?";
+        String c = "KILÉPÉS";
+        int t = JOptionPane.YES_NO_OPTION;
+        int v = JOptionPane.showConfirmDialog(Esemenyek.this,m,c,t);
+        if(v == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }
+}
+
+package app;
+
+import nezet.Esemenyek;
+import nezet.Komponensek;
+
+import javax.swing.*;
+
+public class Program {
+    
+    // Elindítja az alkalmazást a Swing eseményszálon, biztosítva a grafikus felület szálbiztos megjelenítését.
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            //new Esemenyek().setVisible(true);
+            new Komponensek().setVisible(true);
+        });
+    }
+}

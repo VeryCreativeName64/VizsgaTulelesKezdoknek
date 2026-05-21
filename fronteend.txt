@@ -1,0 +1,214 @@
+FRONTEND FEJLESZTÉSI SORREND – REACT (SPA, ÁLTALÁNOS)
+0. Alap gondolkodás (EZ A KIINDULÁS)
+Frontend szerepe:
+* adat megjelenítés
+* felhasználói interakció
+* backend API használata
+Fontos mondat vizsgán:
+„A frontend csak megjelenít és API?t hív, az üzleti logika a backendben van.”
+
+1. Projekt létrehozása + indulás
+React projekt
+1     npx create-react-app frontendvagy Vite:
+1     npm create vite@latest frontendEzután:
+1     npm install
+2     npm startMiért ez az elsõ?
+* kell egy futó alap alkalmazás
+* ellenõrzöd, hogy mûködik a környezet
+
+2. Könyvtárstruktúra KIALAKÍTÁSA (NAGYON FONTOS!)
+Mielõtt komponenseket írnál:
+1     src/
+2      ?? pages/
+3      ?? components/
+4      ?? services/
+5      ?? contexts/
+6      ?? css/Miért most?
+* késõbb ne kelljen átszervezni
+* vizsgán plusz pont, ha struktúrált
+Vizsgamondat:
+„A kódot logikailag szétválasztott mappákba szerveztem.”
+
+3. ROUTING ALAPOK (React Router)
+Router telepítés
+1     npm install react-router-domApp.js – route váz
+1     <BrowserRouter>
+2       <Routes>
+3         <Route path="/" element={<Layout />}>
+4           <Route path="login" element={<LoginPage />} />
+5           <Route path="*" element={<NoPage />} />
+6         </Route>
+7       </Routes>
+8     </BrowserRouter>Miért korán?
+* minden Page route?hoz kötött
+* késõbb erre épül minden
+
+4. LAYOUT + OUTLET (KERET)
+Layout komponens
+1     function Layout() {
+2       return (
+3         <>
+4           <Navigation />
+5           <Outlet />
+6         </>
+7       );
+8     }Mit tartalmaz:
+* menü
+* keret
+* nincs üzleti logika
+Vizsgán:
+„A Layout csak UI keret, az adatkezelés Page szinten történik.”
+
+5. PAGE vs COMPONENT SZÉTVÁLASZTÁS (KRITIKUS!)
+Page (pages/)
+* route-hoz kötött
+* adatot tölt
+* state-et kezel
+Component (components/)
+* újrahasznosítható
+* csak props
+* nincs API hívás
+Fejlesztési sorrend:
+1. létrehozod a Page-et
+2. Page-be beteszed a Componenteket
+
+6. ALAP PAGE SKELETON (EZT MEG KELL JEGYEZNI)
+Minden Page így indul:
+1     const [data, setData] = useState([]);
+2     const [loading, setLoading] = useState(true);
+3     const [error, setError] = useState("");
+4     
+5     useEffect(() => {
+6       loadData();
+7     }, []);Miért?
+* loading állapot
+* hiba kezelése
+* aszinkron adat
+Ez vizsga-biztos minta.
+
+7. SERVICE RÉTEG LÉTREHOZÁSA (API HÍVÁSOK)
+services/api.js
+1     import axios from "axios";
+2     
+3     const api = axios.create({
+4       baseURL: "http://localhost/api"
+5     });
+6     
+7     export default api;Miért külön?
+* Page ne legyen „szemetes”
+* könnyebb tesztelni
+* átláthatóbb
+
+Konkrét service fájl
+1     export const fetchItems = async () => {
+2       const res = await api.get("/items");
+3       return res.data;
+4     };Szabály:
+* service csak HTTP
+* nincs state
+* nincs navigate
+
+8. PAGE + SERVICE ÖSSZEKÖTÉSE
+Page-ben:
+1     const loadData = async () => {
+2       try {
+3         setLoading(true);
+4         const result = await fetchItems();
+5         setData(result);
+6       } catch (e) {
+7         setError("Hiba történt");
+8       } finally {
+9         setLoading(false);
+10       }
+11     };Ez:
+* tiszta
+* érthetõ
+* vizsgán nagyon jó
+
+9. AUTH KÉSÕBB! (FONTOS SORREND)
+Auth nem az elején.
+Elõbb:
+* publikus oldalak
+* lista
+* megjelenítés
+Auth csak utána:
+* login
+* token
+* protected route
+Vizsgamondat:
+„Elõször az alap funkciókat készítettem el, az auth késõbb került rá.”
+
+10. AUTH CONTEXT (AMIKOR MÁR VAN LOGIN)
+contexts/AuthContext.js
+* user state
+* token kezelés
+* login/logout függvények
+Token:
+1     localStorage.setItem("token", token);Miért:
+* újratöltés után is megmarad
+* SPA?hoz ideális
+
+11. PROTECTED ROUTE
+1     if (!user) {
+2       return <Navigate to="/login" />;
+3     }Ez:
+* védi az oldalt
+* frontend szinten
+Backend védelem külön van.
+
+12. FORM KEZELÉS SORRENDJE
+1. state létrehozás
+2. input onChange
+3. handleSubmit
+4. API hívás
+5. navigate / state frissítés
+1     const handleSubmit = (e) => {
+2       e.preventDefault();
+3     };Ez kötelezõ.
+
+13. CSS HOZZÁADÁSA (CSAK EZUTÁN!)
+Soha ne az elején.
+Sorrend:
+1. mûködik?
+2. adat jön?
+3. kattintható?
+4. csak utána CSS
+Vizsgán:
+„A funkcionalitás elsõdleges volt, a stílus utána.”
+
+14. RESZPONZIVITÁS HOZZÁADÁSA (VÉGÉN!)
+Alapelv:
+* desktop ? alap
+* mobil ? media query
+1     @media (max-width: 768px) {
+2       .list {
+3         flex-direction: column;
+4       }
+5     }Frontend workflow része, nem külön projekt.
+
+15. TELJES FRONTEND FEJLESZTÉSI CIKLUS (EGYBEN)
+Ez szó szerint leírható írásbelin:
+1. Projekt létrehozása
+2. Mappastruktúra kialakítása
+3. Routing beállítása
+4. Layout létrehozása
+5. Page komponensek elkészítése
+6. Service réteg kialakítása
+7. API adatok betöltése
+8. Formok és interakciók
+9. Auth és védelem
+10. CSS és reszponzivitás
+
+16. TIPIKUS FRONTEND VIZSGA-MONDATOK
+Ezeket nyugodtan használd:
+* „A Page kezeli az adatbetöltést.”
+* „A komponensek újrahasznosíthatók.”
+* „A backenddel axioson keresztül kommunikál.”
+* „Reszponzivitást media query-vel oldottam meg.”
+
+Ha szeretnéd, következõ lépés lehet:
+* ? frontend vizsgahibák listája
+* ? egy teljes Page + Component + Service minta
+* ? Auth flow frontend szemszögbõl
+* ? írásbeli sablon válaszok frontend kérdésekre
+Írd meg, mi legyen a következõ ??

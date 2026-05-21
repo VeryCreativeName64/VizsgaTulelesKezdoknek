@@ -1,0 +1,174 @@
+TELJES FEJLESZTÉSI CIKLUS – 1 KÖR 
+Adatmodell tervezés 
+Model + migration létrehozása 
+Migration mezõk beállítása 
+Migrate futtatása 
+Model kapcsolatok definiálása 
+Controller létrehozása 
+Route-ok felvétele 
+API tesztelése 
+Auth és jogosultság hozzáadása 
+ 
+0. Kiinduló állapot 
+Feltételezés: Laravel projekt már létrejött, adatbázis elérhetõ, .env beállítva 
+ 
+1. Adatmodell megtervezése (NEM KÓD!) 
+Mielõtt bármit gépelsz: 
+Milyen entitások vannak? (pl. User, Appointment, Post) 
+Milyen táblák lesznek? 
+Kapcsolatok: 
+1–N? 
+N–N? 
+Foreign key-k? 
+Ez azért fontos, mert: 
+migrációk sorrendje számít 
+foreign key hibákat elõz meg 
+Vizsgán elég mondani: 
+„Elõször adatmodellt terveztem.” 
+ 
+2. MODEL + MIGRATION LÉTREHOZÁSA (-m / -a) 
+Alapszabály 
+Táblákat mindig migrációval hozunk létre. 
+Model + migration: 
+1     php artisan make:model Appointment -m 
+Mit csinál: 
+model fájl 
+migration fájl 
+-a (all): 
+1     php artisan make:model Appointment -a 
+Ez létrehozza: 
+model 
+migration 
+controller 
+factory 
+seeder 
+Mikor használd: 
+ha CRUD-heavy projekt 
+ha tudod, hogy kell seeder + controller is 
+ 
+3. MIGRATION KIDOLGOZÁSA (MEZÕK + TÍPUSOK) 
+Most NEM futtatunk semmit, csak szerkesztünk. 
+Migration fájlban: 
+mezõnevek 
+adattípusok 
+foreign key-k 
+Példa gondolkodás: 
+string ? név, email 
+integer / foreignId ? kapcsolat 
+boolean ? állapot 
+timestamps ? mindig kell 
+Ez a lépés: 
+adatbázis szerkezet 
+üzleti logika alapja 
+ 
+4. MIGRATION FUTTATÁSA 
+Elsõ futtatás: 
+1     php artisan migrate 
+Mit csinál: 
+létrehozza a táblákat 
+Mikor: 
+ha új migration készen van 
+ha sorrend jó 
+ 
+5. HA ROSSZ A SORREND / FOREIGN KEY HIBA 
+Tipikus eset: 
+kapcsolódó tábla még nem létezik 
+Megoldás fejlesztés alatt: 
+1     php artisan migrate:fresh 
+Mit csinál: 
+töröl minden táblát 
+újra felépíti az egészet 
+Ha seederek is vannak: 
+1     php artisan migrate:fresh --seed 
+Vizsgán fontos mondat: 
+„Fejlesztés alatt használjuk, élesben nem.” 
+ 
+6. MODEL KIEGÉSZÍTÉSE 
+Migration után: 
+6.1. $fillable 
+1     protected $fillable = [ 
+2       'name', 
+3       'email' 
+4     ]; 
+Miért: 
+tömeges adatfelvitel védelme 
+ 
+6.2. Kapcsolatok 
+1     public function appointments() { 
+2       return $this->hasMany(Appointment::class); 
+3     } 
+Ez: 
+ORM logika 
+késõbb controllerben használod 
+ 
+7. CONTROLLER LOGIKA 
+Ha még nincs: 
+1     php artisan make:controller AppointmentController 
+Controller feladata: 
+request fogadása 
+validáció 
+model hívás 
+JSON válasz 
+Fontos: 
+nem HTML 
+nem üzleti logika szórása 
+ 
+8. VALIDÁCIÓ CONTROLLERBEN 
+1     $request->validate([ 
+2       'email' => 'required|email' 
+3     ]); 
+Miért itt: 
+API szint 
+frontend nem megbízható 
+ 
+9. ROUTE-OK DEFINIÁLÁSA (api.php) 
+1     Route::get('/appointments', ...); 
+2     Route::post('/appointments', ...); 
+Késõbb: 
+middleware 
+role védelem 
+Logika: 
+„Route ? Controller ? Model” 
+ 
+10. TESZTELÉS TINKERREL 
+Mielõtt frontend: 
+1     php artisan tinker 
+Példák: 
+1     User::all(); 
+2     Appointment::with('user')->get(); 
+Miért: 
+gyors 
+nem kell UI 
+model hibák kiszûrése 
+ 
+11. SEEDEREK (TESZT ADATOK) 
+Seeder: 
+1     php artisan make:seeder UserSeeder 
+Futtatás: 
+1     php artisan db:seed 
+Mikor: 
+frontend fejlesztéshez 
+demo adatokhoz 
+ 
+12. AUTH / MIDDLEWARE (KÉSÕBB!) 
+Csak akkor: 
+amikor CRUD már mûködik 
+route-ok stabilak 
+Logika: 
+auth middleware 
+role middleware 
+protected route-ok 
+Soha ne az elején. 
+ 
+13. TELJES FEJLESZTÉSI CIKLUS – 1 KÖR 
+Adatmodell tervezés 
+Model + migration létrehozása 
+Migration mezõk beállítása 
+Migrate futtatása 
+Model kapcsolatok definiálása 
+Controller létrehozása 
+Route-ok felvétele 
+API tesztelése 
+Auth és jogosultság hozzáadása 
+ 
+

@@ -1,0 +1,328 @@
+Most írásbelihez használható CSS jegyzetet kapsz, nagyon gyenge CSS tudásra optimalizálva, kifejezetten 2-es szint megcélzására.
+Ez olyan, hogy egy feladatra szinte mindig rá tudod húzni, és reszponzivitás is benne lesz, mert az kritikus.
+Nem lesz benne dizájnoskodás, csak túlélõ CSS.
+
+CSS JEGYZET – ÍRÁSBELIHEZ (MINIMUM TÚLÉLÕ SZINT)
+1. Alap gondolkodás (ezt írd le fejben)
+CSS célja:
+* elrendezés
+* olvashatóság
+* reszponzivitás
+Írásbelin nem szépség, hanem:
+* ne csússzon szét
+* mobilon se legyen használhatatlan
+
+2. UNIVERSAL “MINDENRE JÓ” ALAP CSS
+Ezt szinte mindig leírhatod, nem büntetnek érte.
+1     * {
+2       box-sizing: border-box;
+3     }
+4     
+5     body {
+6       margin: 0;
+7       font-family: Arial, sans-serif;
+8     }Mit csinál:
+* box-sizing: border-box: nem borul fel a méretezés
+* margin: 0: nincs felesleges fehér keret
+* font-family: olvasható szöveg
+
+3. KÖZÉPRE IGAZÍTÁS – FLEXBOX (MENTÕÖV)
+Ez az egyetlen Flexbox minta, amit meg kell jegyezned.
+1     .container {
+2       display: flex;
+3       justify-content: center;
+4       align-items: center;
+5     }Mit csinál:
+* vízszintesen középre
+* függõlegesen középre
+Ha oszlop kell:
+1     .container {
+2       display: flex;
+3       flex-direction: column;
+4     }
+4. OLDALSZERKEZET (HEADER – CONTENT – FOOTER)
+Írásbelin gyakori.
+1     .page {
+2       min-height: 100vh;
+3       display: flex;
+4       flex-direction: column;
+5     }
+6     
+7     header, footer {
+8       background-color: #eee;
+9       padding: 10px;
+10     }
+11     
+12     main {
+13       flex: 1;
+14       padding: 10px;
+15     }Mit jelent:
+* az oldal kitölti a képernyõt
+* a tartalom nõ
+* footer lent marad
+
+5. TÁBLÁZAT CSS (NAGYON GYAKORI FELADAT!)
+Ha táblázat van ? EZ ARANY.
+1     table {
+2       width: 100%;
+3       border-collapse: collapse;
+4     }
+5     
+6     th, td {
+7       border: 1px solid #ccc;
+8       padding: 8px;
+9       text-align: left;
+10     }Mit csinál:
+* nem csúszik szét
+* átlátható
+* vizsgán teljesen oké
+
+6. FORM ALAP CSS (INPUT, BUTTON)
+Szinte biztos lesz form.
+1     form {
+2       max-width: 400px;
+3       margin: 0 auto;
+4     }
+5     
+6     input, select, button {
+7       width: 100%;
+8       padding: 8px;
+9       margin-bottom: 10px;
+10     }Mit csinál:
+* középre teszi a formot
+* mobilon is használható
+
+7. GOMB – NE LEGYEN CSÚNYA
+1     button {
+2       background-color: #2c7be5;
+3       color: white;
+4       border: none;
+5       cursor: pointer;
+6     }
+8. RESZPONZIVITÁS – EZ KÖTELEZÕ!
+Ha ez nincs, bukó lehet, szóval EZT MEG KELL ÍRNI.
+Media query alapminta
+1     @media (max-width: 768px) {
+2       .container {
+3         flex-direction: column;
+4       }
+5     
+6       table {
+7         font-size: 14px;
+8       }
+9     }Mit jelent:
+* 768px alatt (mobil, tablet)
+* oszlopba vált
+* kisebb betûméret
+Vizsgán elég annyit mondani:
+„Mobil nézethez alkalmazkodik.”
+
+9. MOBIL-FIRST GONDOLKODÁS (1 MONDAT ELÉG)
+Ha kérdés van róla:
+„Az alap stílus mobilra készül, nagyobb képernyõn media query-vel bõvítjük.”
+Nem kell többet magyarázni.
+
+10. MINIMÁL “MINDENT TARTALMAZÓ” CSS – EZT EGYBEN IS LEÍRHATOD
+Ha pánik van, EZT írd le:
+1     * {
+2       box-sizing: border-box;
+3     }
+4     
+5     body {
+6       margin: 0;
+7       font-family: Arial, sans-serif;
+8     }
+9     
+10     .container {
+11       display: flex;
+12       flex-direction: column;
+13       padding: 10px;
+14     }
+15     
+16     table {
+17       width: 100%;
+18       border-collapse: collapse;
+19     }
+20     
+21     th, td {
+22       border: 1px solid #ccc;
+23       padding: 8px;
+24     }
+25     
+26     @media (max-width: 768px) {
+27       .container {
+28         padding: 5px;
+29       }
+30     }Ez:
+* szabályos
+* reszponzív
+* nem hibás
+* 2-es szint simán
+
+11. TIPIKUS ÍRÁSBELI MONDATOK (MEGMENTÕ)
+Ha szöveges kérdés van:
+* „Flexboxot használtam az egyszerû elrendezéshez.”
+* „Media query-vel biztosítottam a reszponzivitást.”
+* „Mobil nézetben az elemek egymás alá kerülnek.”
+* „A táblázat teljes szélességet kapott.”
+
+12. FONTOS: MIT NE CSINÁLJ
+* ne gridelj, ha nem érted
+* ne animálj
+* ne túlbonyolítsd
+* ne pixel-perfect akarj lenni
+
+Reszponzivitas reszletesebben
+Nagyon jó kérdés – itt szokott mindenki elcsúszni, mert a reszponzivitás nem csak egy media query, hanem át kell gondolni, hogyan viselkedjenek az elemek kisebb képernyõn.
+ Most lassan, lépésrõl lépésre, írásbeli-logikával magyarázom el.
+Nem dizájn, hanem túlélési stratégia.
+
+1. Mit jelent VALÓJÁBAN a reszponzivitás?
+Írásbelin ezt jelenti:
+„Az oldal kisebb képernyõn is használható marad:
+ – nem lóg le
+ – nem túl kicsi
+ – az elemek egymás alá kerülnek”
+Tehát nem új oldal, csak:
+* más elrendezés
+* más méretek
+* kevesebb „egymás mellett”
+
+2. AZ ALAP ELV (ezt jegyezd meg!)
+Desktopon:
+* sok elem egymás mellett
+ Mobilon:
+* ugyanazok az elemek egymás alatt
+Ez a kulcsgondolat.
+
+3. HOGYAN IGAZÍTOD HOZZÁ A TÖBBI ELEMET?
+3.1. Elõször: legyen egy „keret”
+Mindig legyen egy fõ wrapper:
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px;
+}
+Mit csinál:
+* nem nyúlik szét nagy képernyõn
+* mobilon is van tér
+Ez reszponzivitás-alap.
+
+4. FLEXBOX + RESZPONZIVITÁS (A LEGFONTOSABB RÉSZ)
+Desktop (alap állapot)
+.list {
+  display: flex;
+  gap: 10px;
+}
+Ez:
+* egymás mellé rakja az elemeket
+
+Mobil (media query-ben)
+@media (max-width: 768px) {
+  .list {
+    flex-direction: column;
+  }
+}
+Mit történik?
+* ugyanaz a lista
+* csak egymás alá kerül
+Ez a reszponzivitás lényege.
+
+5. TÁBLÁZATOK RESZPONZÍV KEZELÉSE (KRITIKUS!)
+Táblázat mobilon mindig problémás.
+Alap tábla:
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+Mobilra „mentõmegoldás”:
+@media (max-width: 768px) {
+  table {
+    font-size: 14px;
+  }
+}
+Ez:
+* kisebb betû
+* nem lóg ki
+Írásbelin ez már elfogadható.
+
+6. FORMOK RESZPONZIVITÁSA (GYAKORI FELADAT!)
+Alap:
+form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+Inputok:
+input, select, button {input,
+  width: 100%;
+Mit csinál:
+* mobilon nem kell zoomolni
+* könnyû kattintani
+Ez UX + reszponzivitás együtt.
+
+7. TIPIKUS PROBLÉMA: „SZÉTCSÚSZIK MOBILON”
+Megoldás 1 – ne fix szélességet használj
+? rossz:
+.card {
+  width: 500px;
+}
+? jó:
+.card {
+  max-width: 500px;
+  width: 100%;
+}
+Ez:
+* desktopon oké
+* mobilon összenyomódik
+
+8. EGY TELJES, ÍRÁSBELIBEN HASZNÁLHATÓ RESZPONZÍV MINTA
+Ha nem tudsz gondolkodni vizsgán, ezt írd le:
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  padding: 10px;
+}
+
+.list {
+  display: flex;
+  gap: 10px;
+}
+
+.card {
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .list {
+    flex-direction: column;
+  }
+}
+Ez:
+* reszponzív ?
+* flexbox ?
+* mobilra átalakul ?
+* 2-eshez bõven elég
+
+9. MIT ÍRSZ LE SZÖVEGESEN ÍRÁSBELIN?
+Ha kérdés van, EZEKET használd:
+* „Flexbox segítségével oldottam meg az elrendezést.”
+* „Media query-vel kezeltem a kisebb képernyõket.”
+* „Mobil nézetben az elemek egymás alá kerülnek.”
+* „A szélességek százalékosak, ezért alkalmazkodnak.”
+Ennyi. Nem kell többet.
+
+10. FONTOS: MIT NEM KELL CSINÁLNI
+* nem kell grid
+* nem kell több breakpoint
+* nem kell animáció
+* nem kell pixelpontos dizájn
+
